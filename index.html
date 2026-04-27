@@ -76,25 +76,16 @@
           0 12px 24px rgba(0, 0, 0, 0.2);
       }
 
+      /* Animasi hanya berjalan jika kelas .hyper-dance ada */
       .cat-dancer {
         display: inline-block;
         cursor: pointer;
-        animation: catShake 0.45s infinite ease-in-out;
         transform-origin: center center;
+        /* Tidak ada animasi bawaan */
       }
 
       .cat-dancer.hyper-dance {
         animation: catShake 0.28s infinite cubic-bezier(0.28, 0.85, 0.42, 1);
-      }
-
-      .cat-vector {
-        width: 180px;
-        height: 180px;
-        display: block;
-        margin: 0 auto;
-        filter: drop-shadow(6px 12px 12px rgba(0, 0, 0, 0.2));
-        border-radius: 50%;
-        object-fit: cover;
       }
 
       @keyframes catShake {
@@ -113,6 +104,16 @@
         100% {
           transform: translate(0, 0) rotate(0deg);
         }
+      }
+
+      .cat-vector {
+        width: 180px;
+        height: 180px;
+        display: block;
+        margin: 0 auto;
+        filter: drop-shadow(6px 12px 12px rgba(0, 0, 0, 0.2));
+        border-radius: 50%;
+        object-fit: cover;
       }
 
       .music-panel {
@@ -265,7 +266,6 @@
 
       <div class="cat-stage">
         <div class="cat-dancer" id="catDancer">
-          <!-- GAMBAR: default hmmm.gif, nanti berubah jadi kicau.gif saat play -->
           <img
             id="catImage"
             class="cat-vector"
@@ -296,27 +296,22 @@
 
     <script>
       (function () {
-        // DOM elements
         const playBtn = document.getElementById("playBtn");
         const stopBtn = document.getElementById("stopBtn");
         const musicStatus = document.getElementById("musicStatus");
         const catDancer = document.getElementById("catDancer");
         const catImage = document.getElementById("catImage");
 
-        // Audio elements
         let audio = null;
         let isPlaying = false;
 
-        // Fungsi untuk memutar lagu (menggunakan file MP3 eksternal)
         function playMusic() {
           if (isPlaying) return;
 
-          // Buat objek Audio jika belum ada
           if (!audio) {
-            audio = new Audio("asset/dj-kicau-mania.mp3"); // PASTIKAN FILE MP3 ADA DI FOLDER SAMA DENGAN NAMA INI
-            audio.loop = true; // loop agar lagu terus berulang
+            audio = new Audio("asset/dj-kicau-mania.mp3");
+            audio.loop = true;
             audio.volume = 0.8;
-            // Jika file tidak ditemukan, beri error
             audio.onerror = () => {
               musicStatus.innerText =
                 '❌ File lagu tidak ditemukan! Letakkan "asset/dj-kicau-mania.mp3" di folder yang sama.';
@@ -324,47 +319,35 @@
             };
           }
 
-          // Reset posisi jika sedang pause di tengah
-          if (audio.paused) {
-            audio
-              .play()
-              .then(() => {
-                isPlaying = true;
-                musicStatus.innerText =
-                  "🎶 KICAU-KICAU MANIA ON FIRE! 🔥 KUCING JOGET NGACIR 🐱💨";
-                catImage.src = "asset/kicau.gif"; // Ganti gambar jadi kicau.gif
-                catDancer.classList.add("hyper-dance"); // Joget kenceng
-              })
-              .catch((err) => {
-                console.warn("Gagal memutar audio:", err);
-                musicStatus.innerText = "⚠️ Gagal memutar musik, cek file MP3";
-              });
-          } else {
-            // jika sedang bermain (seharusnya tidak masuk sini karena isPlaying false, tapi amankan)
-            audio.currentTime = 0;
-            audio.play();
-            isPlaying = true;
-            catImage.src = "asset/kicau.gif";
-            catDancer.classList.add("hyper-dance");
-            musicStatus.innerText = "🎶 KICAU-KICAU MANIA ON FIRE! 🔥";
-          }
+          audio
+            .play()
+            .then(() => {
+              isPlaying = true;
+              musicStatus.innerText =
+                "🎶 KICAU-KICAU MANIA ON FIRE! 🔥 KUCING JOGET NGACIR 🐱💨";
+              catImage.src = "asset/kicau.gif";
+              // Aktifkan animasi goyang
+              catDancer.classList.add("hyper-dance");
+            })
+            .catch((err) => {
+              console.warn("Gagal memutar audio:", err);
+              musicStatus.innerText = "⚠️ Gagal memutar musik, cek file MP3";
+            });
         }
 
-        // Fungsi menghentikan lagu
         function stopMusic() {
           if (audio) {
             audio.pause();
             audio.currentTime = 0;
           }
           isPlaying = false;
-          catImage.src = "asset/hmmm.gif"; // Kembali ke gambar tenang
-          catDancer.classList.remove("hyper-dance"); // Joget normal saja (tetap ada animasi dasar)
+          catImage.src = "asset/hmmm.gif";
+          // Matikan animasi goyang
+          catDancer.classList.remove("hyper-dance");
           musicStatus.innerText = "⏸️ Musik dihentikan | Kucing istirahat 🐈";
         }
 
-        // Event listeners
         playBtn.addEventListener("click", () => {
-          // Jika sedang bermain, stop dulu lalu play ulang? Biar fresh
           if (isPlaying) {
             stopMusic();
           }
@@ -375,12 +358,9 @@
           stopMusic();
         });
 
-        // Animasi dasar (joget ringan) tanpa hyper-dance
-        catDancer.style.animation = "catShake 0.45s infinite ease-in-out";
-        musicStatus.innerText =
-          "🎧 Klik PLAY buat denger Kicau Mania! Kucing siap joget";
-
-        // Jika halaman di-load dan tidak ada interaksi, gambar default hmmm.gif sudah terpasang
+        // Pastikan di awal tidak ada animasi sama sekali
+        catDancer.classList.remove("hyper-dance");
+        musicStatus.innerText = "🎧 Klik PLAY buat denger Kicau Mania!";
       })();
     </script>
   </body>
